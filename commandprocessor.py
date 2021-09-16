@@ -449,29 +449,28 @@ def Weather(keywords, passedValue=False):
                     return "Next Sunday"
                 elif num == 1:
                     return "Monday"
+    results['temptrend'] = result
+    results['windtrend'] = checkWinds(week)
+    results['pressuretrend'] = checkPressure(week)
+    results['conditions'] = checkConditions(week)
+    result = "steady temperatures" = winds = pressures
+    result = "lowering temperatures" = winds = pressures
+    result = "rising temperatures" = winds = pressures
 
-        try:
-            day1 = [1, json_data3['daily'][1]["feels_like"]['day'], json_data3['daily'][1]["weather"][0]["description"], json_data3['daily'][1]['pressure']]
-            day2 = [2, json_data3['daily'][2]["feels_like"]['day'], json_data3['daily'][2]["weather"][0]["description"], json_data3['daily'][2]['pressure']]
-            day3 = [3, json_data3['daily'][3]["feels_like"]['day'], json_data3['daily'][3]["weather"][0]["description"], json_data3['daily'][3]['pressure']]
-            day4 = [4, json_data3['daily'][4]["feels_like"]['day'], json_data3['daily'][4]["weather"][0]["description"], json_data3['daily'][4]['pressure']]
-            day5 = [5, json_data3['daily'][5]["feels_like"]['day'], json_data3['daily'][5]["weather"][0]["description"], json_data3['daily'][5]['pressure']]
-            day6 = [6, json_data3['daily'][6]["feels_like"]['day'], json_data3['daily'][6]["weather"][0]["description"], json_data3['daily'][6]['pressure']]
-            day7 = [7, json_data3['daily'][7]["feels_like"]['day'], json_data3['daily'][7]["weather"][0]["description"], json_data3['daily'][7]['pressure']]
+try:
+            day1 = [1, json_data3['daily'][1]["pressure"], json_data3['daily'][1]["weather"][0]["Main"], json_data3['daily'][1]['temp']["min"], json_data3['daily'][1]['temp']["max"], json_data3['daily'][1]["wind_speed"]]
+            day2 = [2, json_data3['daily'][2]["pressure"], json_data3['daily'][2]["weather"][0]["Main"], json_data3['daily'][2]['temp']["min"], json_data3['daily'][2]['temp']["max"], json_data3['daily'][2]["wind_speed"]]
+            day3 = [3, json_data3['daily'][3]["pressure"], json_data3['daily'][3]["weather"][0]["Main"], json_data3['daily'][3]['temp']["min"], json_data3['daily'][3]['temp']["max"], json_data3['daily'][3]["wind_speed"]]
+            day4 = [4, json_data3['daily'][4]["pressure"], json_data3['daily'][4]["weather"][0]["Main"], json_data3['daily'][4]['temp']["min"], json_data3['daily'][4]['temp']["max"], json_data3['daily'][4]["wind_speed"]]
+            day5 = [5, json_data3['daily'][5]["pressure"], json_data3['daily'][5]["weather"][0]["Main"], json_data3['daily'][5]['temp']["min"], json_data3['daily'][5]['temp']["max"], json_data3['daily'][5]["wind_speed"]]
+            day6 = [6, json_data3['daily'][6]["pressure"], json_data3['daily'][6]["weather"][0]["Main"], json_data3['daily'][6]['temp']["min"], json_data3['daily'][6]['temp']["max"], json_data3['daily'][6]["wind_speed"]]
+            day7 = [7, json_data3['daily'][7]["pressure"], json_data3['daily'][7]["weather"][0]["Main"], json_data3['daily'][7]['temp']["min"], json_data3['daily'][7]['temp']["max"], json_data3['daily'][7]["wind_speed"]]
+
             if not passedValue:
-                universal.speak(f"On {getDay(int(day1[0]))} expect a temperature of {str(round(int(day1[1])))}° and I "
-                                f"forecast {day1[2]} with a pressure of {day1[3]}. On {getDay(int(day2[0]))} expect a temperature of "
-                                f"{str(round(int(day2[1])))}° and expect it to be {day2[2]} all day with a forecasted pressure of "
-                                f" {day2[3]}. For {getDay(int(day3[0]))}, I am forecasting a pressure of {day3[3]}, a temperature of {str(round(int(day3[1])))}° and"
-                                f" {day3[2]}. On {getDay(int(day4[0]))} expect a temperature of {str(round(int(day4[1])))}°, a pressure of {day4[3]},"
-                                f" and I forecast {day4[2]}. On {getDay(int(day5[0]))} expect a temperature of "
-                                f"{str(round(int(day5[1])))}° and expect it to be {day5[2]} all day with a pressure of {day5[3]}. For "
-                                f"{getDay(int(day6[0]))}, I am forecasting a temperature of {str(round(int(day6[1])))}°, a pressure of {day6[3]}, "
-                                f"and {day6[2]}. And lastly, {getDay(int(day7[0]))}, expect a temperature of "
-                                f"{str(round(int(day7[1])))}°, a pressure of {day7[3]},  and {day7[2]}.")
+
             elif passedValue[0] == "return":
                 if passedValue[1] == "processnatural":
-                    weathertrendprocessor.trendFind(todaysData=json_data1, weeklyData=[day1, day2, day3, day4, day5, day6, day7])
+                    weathertrendprocessor.trendFind(weeklyData=[day1, day2, day3, day4, day5, day6, day7])
 
 
         except Exception as err:
