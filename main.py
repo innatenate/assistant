@@ -96,17 +96,16 @@ while 1:
                     print("Processed text to " + str(text))
                     if len(text) > 0:
                         status = keywordprocessor.Process(text)
-                        if universal.waitingForQuery and not status:
-                            universal.waitingForQuery = False
-                            universal.currentQueries = []
-                            universal.speak("Something didn't work properly with that response. Let's try that conversation again.")
                     hot = False
                     processed = True
 
             except Exception as ex:
-                info = ["1", repr(ex), traceback.print_tb(ex.__traceback__)]
-                errorhandler.report(info)
-                hot = False
+                if type(ex) == TimeoutError:
+                    print("stupid block")
+                else:
+                    info = ["1", repr(ex), traceback.print_tb(ex.__traceback__)]
+                    errorhandler.report(info)
+                    hot = False
 
                                                                                           ## ERROR HANDLER
 

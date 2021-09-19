@@ -7,7 +7,7 @@ weather = ["today", "tomorrow", "seven", "day", "rain", "high", "low", "cold", "
            "today's", "todays", "outside", "barometric", "atmospheric", "atmosphere", "pressure"]
 
 
-def Process(text):
+def Process(text, secondary=False):
     originaltext = text
     text = str.lower(text)
     text = text.split(" ")
@@ -21,11 +21,11 @@ def Process(text):
         if len(universal.currentQueries) > 0:
             for query in universal.currentQueries:
                 if query['type'] == 'specific':
-                    print("right before if statement")
                     if commandprocessor.QueryQuestion(text, query['keywords']):
-                        commandprocessor.ProcessQuery(text, query)
-                        return True
+                        commandprocessor.ProcessQuery("".join(text), query)
                     else:
+                        universal.speak("I don't think I heard you right. Let's try that again.")
+                        universal.speak(universal.lastPhrase)
                         return False
                 elif query['type'] == 'yesno':
                     if 'sure' in text or  'yes' in text or  'good' in text or 'great' in text or "please" in text or "thanks" in text:
@@ -33,6 +33,7 @@ def Process(text):
                     else:
                         commandprocessor.ProcessQuery(False, query)
                     return True
+
     for word in text:
         if word in plants:
             plantscore += 1
@@ -70,7 +71,10 @@ def Process(text):
         return Exception("Keyword Error", "Not enough information to work off of")
     else:
         print("Gathered keywords are: " + str(keywords))
-        status = commandprocessor.process(keywords, [plantscore, questionscore, weatherscore], originaltext)
+        if secondary:
+            status = commandprocessor.process(keywords, [plantscore, questionscore, weatherscore], originaltext, secondary)
+        else:
+            status = commandprocessor.process(keywords, [plantscore, questionscore, weatherscore], originaltext)
         if not status:
             universal.speak("Something didn't work properly with that last command. Please try again.")
             raise ReferenceError(f"Could not process command given. Command: {originaltext}")
