@@ -100,7 +100,7 @@ while 1:
                     processed = True
 
             except Exception as ex:
-                if type(ex) == TimeoutError:
+                if ex.__class__.__name__ == "TimeoutError" or ex.__class__.__name__ == "WaitTimeoutError":
                     print("stupid block")
                 else:
                     info = ["1", repr(ex), traceback.print_tb(ex.__traceback__)]

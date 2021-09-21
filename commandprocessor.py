@@ -488,7 +488,7 @@ def Weather(keywords, passedValue=False):
                         pressureContext = universal.contextulizer("askedpressurechanges", method="check")
                         weatherContext = universal.contextulizer("askedweathertrend", method="check")
                         print(pressureContext, weatherContext)
-                        universal.speak(trendPhrase)
+                        universal.speak(trendPhrase, ssml='true')
                         if pressureContext and weatherContext:
                             phrase = []
                             if pressureContext[1] == "high" and (weatherContext[1] == "good" or weatherContext[1] == "fair"):
@@ -521,7 +521,7 @@ def Weather(keywords, passedValue=False):
                         pressureContext = universal.contextulizer("askedpressurechanges", method="check")
                         weatherContext = universal.contextulizer("askedweathertrend", method="check")
                         print(pressureContext, weatherContext)
-                        universal.speak(trendPhrase)
+                        universal.speak(trendPhrase, ssml=True)
                         if pressureContext and weatherContext:
                             phrase = []
                             if pressureContext[1] == "high" and (weatherContext[1] == "good" or weatherContext[1] == "fair"):

@@ -1,7 +1,7 @@
 #imports
 import sounddevice as sd
 import pyttsx3
-
+import speechhandle
 import commandprocessor
 import errorhandler
 import speech_recognition as sr
@@ -10,6 +10,8 @@ import traceback
 import keywordprocessor
 import pyaudio
 import time
+import requests
+
 
 #init
 engine = pyttsx3.init()
@@ -30,17 +32,18 @@ context = []
 #         KEYWORDS: ""
 #         PROCESS: FUNCTION
 
-def speak(phrase) -> object:
+def speak(phrase, ssml=False):
     print(phrase)
-    engine.say(phrase)
-    engine.runAndWait()
-    engine.stop()
+    if ssml:
+        phrase = "<speak>" + phrase + "</speak>"
+    speechhandle.process(phrase, ssml)
     global lastPhrase
     lastPhrase = phrase
     global pastPhrases
     pastPhrases.insert(0, phrase)
     if len(pastPhrases) > 5:
-        pastPhrases.remove(len(pastPhrases))
+        pastPhrases.pop(5)
+
 
 def query(selectedQuery):
     global currentQueries

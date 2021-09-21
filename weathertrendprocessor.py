@@ -41,6 +41,9 @@ phrases = {
                          "I've detected that the atmospheric pressure seems to be rising."],
             "winds": ["I'm noticing a lot of strong winds this week.",
                       "Seems like winds will be pretty strong this week.",
+                      "I am forecasting some strong winds this week."],
+            "wind": ["I'm noticing a lot of strong winds this week.",
+                      "Seems like winds will be pretty strong this week.",
                       "I am forecasting some strong winds this week."]},
         "two": {
             "temperature/pressure": [
@@ -64,6 +67,9 @@ phrases = {
                          "Barometric pressures seem to be decreasing."],
             "winds": ["Winds are dying down this week.",
                       "Wind speeds are calming down towards the end of forecast.",
+                      "I am detecting a decrease in wind speeds throughout the week."],
+            "wind": ["Winds are dying down this week.",
+                      "Wind speeds are calming down towards the end of forecast.",
                       "I am detecting a decrease in wind speeds throughout the week."]},
         "two": {
             "temperature/pressure": [
@@ -82,6 +88,9 @@ phrases = {
                         "This forecast shows temperatures that are fairly stagnant.",
                         "There is very little change in temperatures in my predicted forecast."],
         "winds": ["I see little to no change in wind speeds on the forecast.",
+                  "The forecast is showing little to no change in winds.",
+                  "I am not detecting a significant change in wind speeds."],
+        "wind": ["I see little to no change in wind speeds on the forecast.",
                   "The forecast is showing little to no change in winds.",
                   "I am not detecting a significant change in wind speeds."],
         "pressure": ["The barometric pressure is shown as stagnant on this forecast.",
@@ -115,10 +124,10 @@ def dailyBreakdown(day, week, last=False):
         dayString += commandprocessor.selectandspeak(phrases['endings'])
 
     introduction = commandprocessor.selectandspeak([
-        f"I am forecasting an average temperature of {day['temps']['day']}°.",
+        f"The average temperatures are around {day['temps']['day']}°.",
         f"expect an average temperature of {day['temps']['day']}°.",
         f"my forecast shows temperatures around {day['temps']['day']}°.",
-        f"temperatures be reaching around {day['temps']['day']}°.",
+        f"temperatures will be reaching around {day['temps']['day']}°.",
         f"the average temperature is forecasted at {day['temps']['day']}°.",
         f"I expect temperatures around {day['temps']['day']}°."])
     dayString += introduction
@@ -126,27 +135,27 @@ def dailyBreakdown(day, week, last=False):
     if day['detail']['main'] == "Rain" or day['detail']['main'] == "Drizzle" or day['detail']['main'] == "Thunderstorm":
         dayString += commandprocessor.selectandspeak([
             "I am seeing a fairly noticeable chance of rain forecasted.",
-            "Seems like there is a possibility of rain.",
-            "I am detecting a chance of rain.",
-            "Expect it to be fairly rainy. I don't see much else forecasted."
+            "There is a possibility of rain.",
+            "Addtionally; There looks to be a chance of rain expected.",
+            "Expect it to be fairly rainy."
         ])
     elif day['detail']['main'] == "Clear":
         dayString += commandprocessor.selectandspeak([
             "Seems like there will be clear skies all day.",
             "My forecast predicts clear skies all day.",
-            "Expect clear skies, maybe a stray cloud or two.",
+            "I anticipate clear skies, maybe a stray cloud or two.",
             "No rain, or clouds expected that day, just clear skies.",
             f"There's really nothing but clear skies forecasted."])
     elif day['detail']['main'] == "Clouds":
         dayString += commandprocessor.selectandspeak([
-            "A expect a decent amount of clouds. Nothing but clouds really.",
-            f"Seems like it will be fairly cloudy {day['day']}.",
+            "There will be a decent amount of clouds. Nothing but clouds really.",
+            f"It will be fairly cloudy {day['day']} all day.",
             "I really only see clouds in the forecast. Nothing else much to note.",
             "Expect clouds all day. I don't really see any rain forecasted, but check back with me. You never know."])
     elif day['detail']['main'] == "Snow":
         dayString += commandprocessor.selectandspeak([
             f"I see some snow in the forecast for {day['day']}. Prepare your snow shovels.",
-            "Expect some snow or ice on this day. Seems like a fairly decent chance.",
+            "There is a possibility of some snow or ice on this day. Seems like a fairly decent chance.",
             f"I am forecasting snow or ice for {day['day']}. Don't forget to salt sidewalks or stairs.",
             "You should anticipate a chance of snow or ice. It seems fairly significant."])
     else:
@@ -177,6 +186,10 @@ def checkConditions(week):
             rain += 1
         elif condition == "Snow":
             snow += 1
+    print(f"\nCloudy: {cloudy}" +
+          f"\nRain: {rain}" +
+          f"\nClear: {clear}" +
+          f"\nSnow: {snow}")
 
     if 3 <= clear > 1:
         result['clear'] = "moderate"
@@ -190,12 +203,13 @@ def checkConditions(week):
         result['snow'] = "moderate"
     if snow > 3:
         result['snow'] = "high"
-    if 2 < snow > 0:
+    if snow == 1:
         result['snow'] = "chance"
     if 3 <= cloudy > 1:
         result['clouds'] = "moderate"
     if cloudy > 3:
         result['clouds'] = "high"
+
     print("\nPulled from condition check:      " + str(result))
     return result
 
@@ -427,7 +441,7 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
                        "I am forecasting a rife of cloudy days."],
             "snow": ["Seems like it's probably pretty cold with all the snow and ice on the forecast.",
                      "I see a lot of snow and ice heading our way.",
-                     "Expect nothing but snow and ice this week."],
+                     "Nothing but snow and ice this week."],
             "clear": ["A lot of clear skies this week.",
                       "Seems like nothing but clear skies for the week.",
                       "No clouds in sight this week."]},
@@ -439,7 +453,7 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
                    "I notice that there is some warming temperatures coming in this week."],
         "lowering": [
             "Seems like temperatures are dropping this week. A low pressure system is more than likely approaching.",
-            "Seems like colder weather is expected this week.",
+            "Seems like colder weather is coming this week.",
             "I believe there is a low pressure system entering the area."],
         "steady": ["Seems like a typical week.",
                    "Nothing really to note this week.",
@@ -449,7 +463,7 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
                    "I am forecasting basic conditions."],
         "wind": [f"Seems like it's going to be a windy week with an average wind speed of {secondary[2]}.",
                  f"I am forecasting a fairly windy week with an average speed of {secondary[2]}.",
-                 f"Expect high winds with an average of {secondary[2]}."]
+                 f"There will be fairly high winds with an average of {secondary[2]}."]
     }
     usedPhrases = []
     extraNotes = {}
@@ -531,7 +545,7 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
         secondarysentence = [
             f"For this week, I am forecasting an average high of {round(secondary[0])}° and a low of {round(secondary[1])}°.",
             f"I am forecasting a general high of {round(secondary[0])}° and a low of {round(secondary[1])}°.",
-            f"Expect daily temperatures to be around {round(secondary[1])}° to {round(secondary[0])}°.",
+            f"Daily temperatures will be around {round(secondary[1])}° to {round(secondary[0])}°.",
             f"I've calculated an average high of {round(secondary[0])}° and a low of {round(secondary[1])}°.",
             f"Seems like temperatures will stick between {round(secondary[0])}° and {round(secondary[1])}°.",
             f"{round(secondary[0])}° is the average high this week with {round(secondary[1])}° being the average low."]
@@ -629,14 +643,14 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
                 daytakeaway.insert(0, commandprocessor.selectandspeak([
                     f"{day['day']} is the hottest day this week.",
                     f"{day['day']} marks the point of the hottest temperatures of the week.",
-                    f"The warmest part of the week is expected around {day['day']}."]))
+                    f"The warmest part of the week is around {day['day']}."]))
                 maxs.pop('temp')
             if 'humidity' in maxs and compareValues['humidity'] == maxs['humidity']:
                 if len(daytakeaway) > 0:
                     daytakeaway.insert(len(daytakeaway), commandprocessor.selectandspeak([
                         f"This day also shows the highest humidity levels, reporting at {day['detail']['humidity']}%.",
                         f"{day['day']} also holds the weekly high for humidity levels. Expect a humidity level of {day['detail']['humidity']}%.",
-                        f"I am also noticing some rather high humidity readings, reaching up to {day['detail']['humidity']}%."]))
+                        f"I am additionally noticed some the highest humidity readings of the week, reaching up to {day['detail']['humidity']}%."]))
                 else:
                     daytakeaway.insert(0, commandprocessor.selectandspeak([
                         f"My forecast for {day['day']} shows the highest humidity levels of the week, reporting at {day['detail']['humidity']}%.",
@@ -665,13 +679,13 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
                 else:
                     daytakeaway.insert(0, commandprocessor.selectandspeak([
                         f"The barometric pressure is at it's highest on {day['day']} with readings around {compareValues['pressure']} hectopascals.",
-                        f"Barometric pressure seems to rise to it's highest point on {day['day']}, with an expected pressure of {compareValues['pressure']} hectopascals.",
+                        f"Barometric pressure seems to rise to it's highest point on {day['day']}, with a pressure of {compareValues['pressure']} hectopascals.",
                         f"{day['day']} is crown champion of highest barometric reading of the week, forecasted at {compareValues['pressure']} hectopascals."]))
                 maxs.pop('pressure')
             if 'dewpoint' in maxs and compareValues['dewpoint'] == maxs['dewpoint']:
                 if len(daytakeaway) > 0:
                     daytakeaway.insert(len(daytakeaway), commandprocessor.selectandspeak([
-                        f"Also, expect the highest dew point of the week.",
+                        f"Also, this day marks the highest dew point of the week.",
                         f"My forecast also shows the highest dew point of the week.",
                         f"Another thing to note, the dew point is at it's highest all week."]))
                 else:
@@ -683,7 +697,7 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
             if 'uvi' in maxs and compareValues['uvi'] == maxs['uvi']:
                 if len(daytakeaway) > 0:
                     daytakeaway.insert(len(daytakeaway), commandprocessor.selectandspeak([
-                        f"You should also expect fairly high UVI readings, some reaching {day['detail']['uvi']}.",
+                        f"You should also prepare for fairly high UVI readings, some reaching {day['detail']['uvi']}.",
                         f"It may be the brightest day this week, with a UVI reading of {day['detail']['uvi']}.",
                         f"UV rays are at weekly high of {day['detail']['uvi']}."]))
                 else:
@@ -702,7 +716,7 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
                     daytakeaway.insert(0, commandprocessor.selectandspeak([
                         f"{day['day']} will be the coolest day all week. .",
                         f"{day['day']} holds the spot for coolest day of the week.",
-                        f"For {day['day']}, I am expecting the lowest temperatures of the week."]))
+                        f"For {day['day']}, I am calculating the lowest temperatures of the week."]))
                 mins.pop('temp')
             if 'humidity' in mins and compareValues['humidity'] == mins['humidity']:
                 if len(daytakeaway) > 0:
@@ -726,7 +740,7 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
                     daytakeaway.insert(0, commandprocessor.selectandspeak([
                         f"Seems like {day['day']} holds the spot for the lowest wind speeds, with an average speed of {day['winds']['speed']} miles per hour.",
                         f"{day['day']} seems to be the day with the lowest wind speeds, with the forecast showing speeds around {day['winds']['speed']} miles per hour.",
-                        f"On {day['day']}, expect the lowest wind speeds of the week, with an average of {day['winds']['speed']} miles per hour."]))
+                        f"On {day['day']}, this area will be experiencing  the lowest wind speeds of the week, with an average of {day['winds']['speed']} miles per hour."]))
                 mins.pop('wind')
             if 'pressure' in mins and compareValues['pressure'] == mins['pressure']:
                 if len(daytakeaway) > 0:
@@ -737,7 +751,7 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
                 else:
                     daytakeaway.insert(0, commandprocessor.selectandspeak([
                         f"{day['day']} has the lowest barometric reading of the week, hitting only {compareValues['pressure']} hectopascals.",
-                        f"I am expecting the lowest atmospheric pressure on {day['day']}, with readings only reaching {compareValues['pressure']} hectopascals.",
+                        f"Prepare for the lowest atmospheric pressure on {day['day']}, with readings only reaching {compareValues['pressure']} hectopascals.",
                         f"{day['day']} is crown champion of the lowest barometric reading, forecasted at {compareValues['pressure']} hectopascals."]))
                 mins.pop('pressure')
             if 'dewpoint' in mins and compareValues['dewpoint'] == mins['dewpoint']:
@@ -777,7 +791,7 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
             context = "poor"
             beginForecastPhrase += commandprocessor.selectandspeak([
                 "This week seems like a fairly rainy one. I am forecasting rain almost every day.",
-                "I am expecting a large amount of rain in the area this week. Almost every day actually.",
+                "I am forecasting  a large amount of rain in the area this week. Almost every day actually.",
                 "Seems like it's going to rain a lot this week."])
         elif "highclouds" in important:
             context = "fair"
@@ -812,7 +826,7 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
             context = "windy"
             beginForecastPhrase += commandprocessor.selectandspeak(notes["wind"])
 
-        if 3 < len(rising) > 1:
+        if len(rising) == 2:
             if "temperature" in rising and "pressure" in rising:
                 beginForecastPhrase += commandprocessor.selectandspeak(phrases["rising"]["two"]["temperature/pressure"])
             if "wind" in rising and "pressure" in rising:
@@ -820,12 +834,12 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
             else:
                 beginForecastPhrase += commandprocessor.selectandspeak(phrases["rising"]['one'][rising[0]])
                 beginForecastPhrase += commandprocessor.selectandspeak(phrases["rising"]['one'][rising[1]])
-        elif 2 < len(rising) > 0:
+        elif len(rising) == 1:
             beginForecastPhrase += commandprocessor.selectandspeak(phrases["rising"]['one'][rising[0]])
         elif len(rising) == 3:
             beginForecastPhrase += commandprocessor.selectandspeak(phrases["rising"]["three"])
 
-        if 3 < len(lowering) > 1:
+        if len(lowering) == 2:
             if "temperature" in lowering and "pressure" in lowering:
                 beginForecastPhrase += commandprocessor.selectandspeak(phrases["lowering"]["two"]["temperature/pressure"])
             if "wind" in lowering and "pressure" in lowering:
@@ -833,29 +847,26 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
             else:
                 beginForecastPhrase += commandprocessor.selectandspeak(phrases["lowering"]['one'][lowering[0]])
                 beginForecastPhrase += commandprocessor.selectandspeak(phrases["lowering"]['one'][lowering[1]])
-        elif 2 < len(lowering) > 0:
+        elif len(lowering) == 1:
             beginForecastPhrase += commandprocessor.selectandspeak(phrases["lowering"]['one'][lowering[0]])
         elif len(lowering) == 3:
             beginForecastPhrase += commandprocessor.selectandspeak(phrases["lowering"]["three"])
 
-        if 3 < len(steady) > 1:
+        if len(steady) == 2:
             beginForecastPhrase += commandprocessor.selectandspeak(phrases["steady"]['one'][steady[0]])
             beginForecastPhrase += commandprocessor.selectandspeak(phrases["steady"]['one'][steady[1]])
-        elif 2 < len(steady) > 0:
+        elif len(steady) == 1:
             beginForecastPhrase += commandprocessor.selectandspeak(phrases["steady"]['one'][lowering[0]])
         elif len(steady) == 3:
             beginForecastPhrase += commandprocessor.selectandspeak(phrases["steady"]["three"])
 
         finalTakeaway = ""
         for day in weeklyTakeaway:
-            finalTakeaway += weeklyTakeaway[day] + ("   "*10)
+            finalTakeaway += '<p>' + weeklyTakeaway[day] + '</p>'
 
-        parsePhrase = f"I am forecasting {context} weather.   " \
-                      "\n" + beginForecastPhrase + "\n" \
-                      "\n" + finalTakeaway + "\n"
+        parsePhrase = "<amazon:domain name='news'> " + beginForecastPhrase + "</amazon:domain>  <break strength = 'x-strong'/>" + finalTakeaway +  f'<amazon:domain name="news"> Looks like this forecast is predicting a week of {context} weather conditions. </amazon:domain>'
 
         print("FINALIZED AND SUCCESSFULLY DONE!")
-
         if context:
             universal.contextulizer(["askedweathertrend", context])
             return parsePhrase
