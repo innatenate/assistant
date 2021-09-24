@@ -27,6 +27,9 @@ waitingForQuery = False
 recognizer = sr.Recognizer()
 context = []
 
+currentWeather = None
+hourWeather = None
+
 #   query object
 #         TYPE: YESNO SPECIFIC
 #         KEYWORDS: ""
