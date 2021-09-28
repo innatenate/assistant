@@ -26,6 +26,7 @@ currentQueries = []
 waitingForQuery = False
 recognizer = sr.Recognizer()
 context = []
+speech = 0
 
 currentWeather = None
 hourWeather = None
@@ -35,11 +36,10 @@ hourWeather = None
 #         KEYWORDS: ""
 #         PROCESS: FUNCTION
 
-def speak(phrase, ssml=False):
-    print(phrase)
+def speak(phrase, ssml=False, client=False):
     if ssml:
         phrase = "<speak>" + phrase + "</speak>"
-    speechhandle.process(phrase, ssml)
+    speechhandle.process(phrase, ssml, client)
     global lastPhrase
     lastPhrase = phrase
     global pastPhrases
@@ -54,25 +54,23 @@ def query(selectedQuery):
 
     if selectedQuery not in currentQueries:
         currentQueries.insert(0, selectedQuery)
-        print(currentQueries[0])
         waitingForQuery = True
-        print("done installing query, now commencing listening")
         status = False
         while not status:
             try:
+                print("[PROC] Attempting to listen")
                 with sr.Microphone() as source:
                     recognizer.adjust_for_ambient_noise(source, duration=1)
-                    print("Listening...")
                     audio = recognizer.listen(source, timeout=5)
                     text = recognizer.recognize_google(audio, language="en-US")
-                    print("Processed text to " + str(text))
                     status = keywordprocessor.Process(text)
+                    if not status:
+                        print(f"error: {text}")
             except Exception:
                 speak(commandprocessor.selectandspeak(["I didn't process that correctly. Let's try again.", "Something didn't seem write with that response. Let's try again.", "I don't think that's a valid response. I said "]))
                 speak(pastPhrases[1])
             time.sleep(0.2)
     else:
-        print('problem chief')
         return Exception
 
 def contextulizer(parameter, method="add", contextType=list):
@@ -84,8 +82,8 @@ def contextulizer(parameter, method="add", contextType=list):
 
     global context
 
-    print(f"\n Contextualizer contextualizing context:\nparameter:    {str(parameter)}\nmethod:   {method}\n")
-    print(f"Current context contextualized by contextualizer: {str(context)}")
+    print(f"\n [CONT] Contextualizer contextualizing context:\nparameter:    {str(parameter)}\nmethod:   {method}\n")
+    print(f"[CONT] Current context contextualized by contextualizer: {str(context)}")
 
     if method == "literalcheck":
         if parameter in context:
@@ -110,7 +108,7 @@ def contextulizer(parameter, method="add", contextType=list):
         if len(context) >= 5:
             context.remove(len(context))
         context.insert(0, parameter)
-        print(f"Contextualizer complete contextualization of \n    {str(context)}\n           type: {type(context)}")
+        print(f"[SUCC] Contextualizer complete contextualization of \n    {str(context)}\n           type: {type(context)}")
         return context
 
 

@@ -2,6 +2,7 @@ import boto3
 from pygame import mixer
 import time
 import os
+import universal
 
 polly = boto3.Session(
     aws_access_key_id="AKIAW62R2AZRJ32TRXFJ",
@@ -12,7 +13,7 @@ mixer.init()
 
 spoken = 0
 
-def process(speak, ssml=False):
+def process(speak, ssml=False, client = False):
     global spoken
     spoken += 1
     try:
@@ -28,8 +29,6 @@ def process(speak, ssml=False):
                                                Text=speak,
                                                Engine='neural')
     except Exception as e:
-        print("Couldn't process neural")
-        print(repr(e))
         if e.__traceback__:
             print(repr(e.__traceback__))
         try:
@@ -45,8 +44,10 @@ def process(speak, ssml=False):
     file.close()
     mixer.music.unload()
     mixer.music.load(f"speech{spoken}.mp3")
-    mixer.music.play()
-    while mixer.music.get_busy():
-        if os.path.exists(f"speech{spoken-1}.mp3"):
-            os.remove(f"speech{spoken-1}.mp3")
-
+    if not client:
+        mixer.music.play()
+        while mixer.music.get_busy():
+            if os.path.exists(f"speech{spoken-1}.mp3"):
+                os.remove(f"speech{spoken-1}.mp3")
+    else:
+        universal.speech = spoken

@@ -17,7 +17,6 @@ def Question(keywords, question):
             if word == words:
                 points += 1
     if points > (len(keywords) * .74) or points > (len(question) * .74):
-        print("passed with: " + str((len(keywords) * .74)) + " " + (str(len(question) * .74)) + " " + (str(points)))
         return True
     else:
         return False
@@ -150,16 +149,16 @@ def selectandspeak(phrases):
     return "      " + phrase
 
 def ProcessQuery(keywords, query):
-    print("processing query")
+    print("[PROC] Processing query")
     status = query['process'](keywords)
     if not status:
         return False
     universal.waitingForQuery = False
     universal.currentQueries.remove(universal.currentQueries.index(query))
-    print("processed")
+    print['[SUCC] Processed query']
     return True
 
-def process(keywords, scores=False, originaltext=False, passedValue=False):
+def process(keywords, scores=False, originaltext=False, passedValue=False, client=False):
     if scores:
         plantscore = scores[0]
         questionscore = scores[1]
@@ -168,28 +167,23 @@ def process(keywords, scores=False, originaltext=False, passedValue=False):
         plantscore = questionscore = weatherscore = 0
 
     if weatherscore > plantscore and weatherscore > questionscore:
-        if passedValue:
-            result = weatherhandler.process(keywords, passedValue)
-        else:
-            result = weatherhandler.process(keywords)
+        result = weatherhandler.process(keywords, passedValue, client)
         if result:
             return True
         else:
             return False
     elif questionscore > weatherscore and questionscore > plantscore:
-        if passedValue:
-            result = questionhandler.process(keywords, originaltext, passedValue)
-        else:
-            result = questionhandler.process(keywords, originaltext)
+        result = questionhandler.process(keywords, originaltext, passedValue, client)
         if result:
             return True
         else:
             return False
     else:
-        result = weatherhandler.process(keywords, passedValue)
-        if not result: result = questionhandler.process(keywords, originaltext, passedValue)
-        if not result: print("Failure to find result")
-        if result:
-            return True
+        result = weatherhandler.process(keywords, passedValue, client)
+        if not result:
+            result = questionhandler.process(keywords, originaltext, passedValue, client)
+        if not result:
+            print("[ERRO] Failure to find result in processing")
         else:
-            print("Could not find a solution to \n      KW:" + keywords + "\n      OT:" + originaltext)
+            return True
+

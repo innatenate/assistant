@@ -87,13 +87,9 @@ def wellnessCheck(keywords, data=False, passedValue=False):
         return True
 
     queue['process'] = queryProcess
-    print(queue)
     universal.query(queue)
-    print("removing original query")
     if queue in universal.currentQueries:
         universal.currentQueries.remove(queue)
-    else:
-        print(f"didn't find it in the queries. but i did find {universal.currentQueries}")
     return True
 qb['wellnesscheck']['function'] = wellnessCheck
 
@@ -161,12 +157,12 @@ def calculate(keywords):
         answer = eval(keywords)
         return answer, keywords
     except Exception as e:
-        print(repr(e))
+        print("[ERRO]: " + repr(e))
         traceback.print_tb(e.__traceback__)
         return False, False
 
 
-def process(keywords, info, passedValue=False):
+def process(keywords, info, passedValue=False, client=False):
     """Process question commands, needs keywords(list) and can take a passedValue(any)"""
 
     questionChoices = []

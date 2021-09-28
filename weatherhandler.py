@@ -25,7 +25,6 @@ qb = {}
 
 
 def checkAverages(data, data2):
-    print("Checking averages")
     fl = data['main']['feels_like']  # gets the feels like temp
     tempmin = data['main']['temp_min']
     tempmax = data['main']['temp_max']
@@ -98,7 +97,6 @@ def checkAverages(data, data2):
             reply += commandprocessor.selectandspeak([f"I have a fun fact for you. {get_fact()}",
                                      f"And to finish your weather report, I have a fun fact {get_fact()}",
                                      f"Also, I found a fun fact for you. {get_fact()}"])
-            print(reply)
     return reply
 
 qb['weatheroutside'] = {}
@@ -106,7 +104,7 @@ qb['weatheroutside']['keys'] = ["what weather today", "what weather outside" , "
                                 "what's the weather outside", "what does it feel like outside", "what is the weather today",
                                 "What's today's weather", "what is weather outside currently"]
 qb["weatheroutside"]['require'] = ["outside", "today", "weather", "today's", "current"]
-def weatherOutside(keywords, info, passedValue=False):
+def weatherOutside(keywords, info, passedValue=False, client=False):
     formatted_data = info[0]
     tempmin = info[1]
     tempmax = info[2]
@@ -117,7 +115,7 @@ def weatherOutside(keywords, info, passedValue=False):
                 dailyWeatherJSONAdvc['main']['humidity']) != 100:
             universal.speak(
                 f"There is a chance it may rain based on the pressure and humidity changes in the atmosphere." +
-                ' Would you like to hear the seven day forecast I have made?')
+                ' Would you like to hear the seven day forecast I have made?', client)
             queue = {
                 'type': 'yesno',
                 'keywords': ['sure', 'yes', 'good', 'great', 'no', 'bad', 'stop', 'quit',
@@ -128,7 +126,7 @@ def weatherOutside(keywords, info, passedValue=False):
                 if result:
                     keywordprocessor.Process("what is the 7-day forecast")
                 else:
-                    universal.speak("Alright then. If you need anything let me know.")
+                    universal.speak("Alright then. If you need anything let me know.", client)
 
             queue['process'] = otherProcess
             universal.query(queue)
@@ -139,7 +137,7 @@ def weatherOutside(keywords, info, passedValue=False):
             [f"Today's weather is {str(formatted_data)} and it currently feels like {str(feellike)}° fahrenheit.",
              f"For today I am forecasting with {str(formatted_data)} and a feels like temperature of {str(feellike)}° fahrenheit.",
              f"It currently feels like {str(feellike)}° fahrenheit outside and you should expect {str(formatted_data)}."])
-        universal.speak(phrase + status)
+        universal.speak(phrase + status, client)
     universal.contextulizer(["weatheroutside"])
     return True
 qb['weatheroutside']['function'] = weatherOutside
@@ -148,7 +146,7 @@ qb['tempoutside'] = {}
 qb['tempoutside']['keys'] = ["what is the high today", "what is the low today", "is it going to be hot today",
                              "is it hot outside today", "is it cold outside today", "should i wear a jacket today",
                              "is it going to be hot today", "is it going to be cold today"]
-def tempOutside(keywords, info, passedValue=False):
+def tempOutside(keywords, info, passedValue=False, client=False):
     formatted_data = info[0]
     tempmin = info[1]
     tempmax = info[2]
@@ -189,7 +187,7 @@ def tempOutside(keywords, info, passedValue=False):
     if context in contextAddition:
         phrase += commandprocessor.selectandspeak(contextAddition[context])
 
-    universal.speak(phrase)
+    universal.speak(phrase, client)
     return True
 qb['tempoutside']['function'] = tempOutside
 
@@ -198,7 +196,7 @@ qb['raincheck']['keys'] = ["do you think it will rain soon", "will it rain today
                            "will it precipitate today", "could it rain precipitate today", "raining today",
                            "is it going to rain today", "going rain soon today", "what is this precipitation chance"]
 qb['raincheck']['require'] = ["rain", "precipitate", "raining"]
-def rainCheck(keywords, info, passedValue=False):
+def rainCheck(keywords, info, passedValue=False, client=False):
     if (int(dailyWeatherJSONAdvc['main']['pressure']) <= 1015 or (
             70 < int(dailyWeatherJSONAdvc['main']['humidity']) > 50)) and int(
         dailyWeatherJSONAdvc['main']['humidity']) != 100:
@@ -215,7 +213,7 @@ def rainCheck(keywords, info, passedValue=False):
                                  "I am not forecasting rain for today, at least not at this moment.",
                                  "There is no precipitation forecasted for today."])
 
-    universal.speak(phrase + " Would you like to hear the daily forecast?")
+    universal.speak(phrase + " Would you like to hear the daily forecast?", client)
 
     queue = {
         'type': 'yesno',
@@ -227,7 +225,7 @@ def rainCheck(keywords, info, passedValue=False):
         if result:
             keywordprocessor.Process("what is the weather today")
         else:
-            universal.speak("Alright then. If you need anything let me know.")
+            universal.speak("Alright then. If you need anything let me know.", client)
         universal.waitingForQuery = False
 
     queue['process'] = otherProcess
@@ -240,7 +238,7 @@ qb['pressureoutside'] = {}
 qb['pressureoutside']['keys'] = ["what atmosphere changes", "what atmosphere pressure", "what barometric pressure",
                                  "what is the atmospheric pressure"]
 qb['pressureoutside']['require'] = ["barometric", "atmosphere", "atmospheric", "pressure"]
-def pressureOutside(keywords, info, passedValue=False):
+def pressureOutside(keywords, info, passedValue=False, client=False):
     averagePressure = round((int(weeklyDataJSON['daily'][0]['pressure']) + int(dailyWeatherJSONBasic['current']['pressure']) + int(dailyWeatherJSONAdvc['main']['pressure'])) / 3)
     result = "average"
 
@@ -261,7 +259,7 @@ def pressureOutside(keywords, info, passedValue=False):
                                 "That's a higher level reading for this area.",
                                 "Expect nice weather."])
 
-    universal.speak((phrase + "         Would you like to hear the 7-day forecast?"))
+    universal.speak(phrase + "         Would you like to hear the 7-day forecast?", client)
 
     queue = {
         'type': 'yesno',
@@ -273,7 +271,7 @@ def pressureOutside(keywords, info, passedValue=False):
         if result:
             keywordprocessor.Process("what is the 7-day forecast")
         else:
-            universal.speak("Alright then. If you need anything let me know.")
+            universal.speak("Alright then. If you need anything let me know.", client)
         universal.waitingForQuery = False
 
     queue['process'] = otherProcess
@@ -286,7 +284,7 @@ qb['pressureoutside']['function'] = pressureOutside
 qb['tomorrowcheck'] = {}
 qb['tomorrowcheck']['keys'] = ["what is the weather tomorrow", "what is tomorrow's weather", "what is tomorrows weather"]
 qb['tomorrowcheck']['require'] = ['tomorrow', "tomorrow's", "tomorrows"]
-def tomorrowCheck(keywords, info, passedValue=False):
+def tomorrowCheck(keywords, info, passedValue=False, client=False):
 
     day1 = [weeklyDataJSON['daily'][0]['dt'], weeklyDataJSON['daily'][0]["feels_like"]['day'], weeklyDataJSON['daily'][0]["weather"][0]["description"]]
 
@@ -296,7 +294,7 @@ def tomorrowCheck(keywords, info, passedValue=False):
          f"Tomorrow I am expecting {str(day1[2])} and temperatures around {str(round(int(day1[1])))}°",
          f"You should expect {str(day1[2])}, with a {str(round(int(day1[1])))}° feels-like temperature."])
 
-    universal.speak(phrase)
+    universal.speak(phrase, client)
 
     return True
 qb['tomorrowcheck']['function'] = tomorrowCheck
@@ -306,7 +304,7 @@ qb['sevendaycheck']['keys'] = ["what is the seven day forecast", "what is it lik
                                "what is the 7-day forecast this week", "what is the weather this week", "what's the weather this week",
                                "what is weekly forecast"]
 qb['sevendaycheck']['require'] = ["week", "7-day", "seven", "week's", "weeks", "weekly"]
-def sevenDayCheck(keywords, info, passedValue=False):
+def sevenDayCheck(keywords, info, passedValue=False, client=False):
   for word in keywords:
     if word in ["detailed", "advanced", 'advance', 'detail', 'details']: passedValue = "basic"
     if word in ['summary', "basic", "simple", "dimple", 'summarize', "summarized"]: passedValue = "simple"
@@ -316,21 +314,17 @@ def sevenDayCheck(keywords, info, passedValue=False):
             "I can answer that for you, but I first need to know if you want the simple or advanced forecast.",
             "Would you like to hear the basic or advanced forecast?",
             "Alright, would you like to hear the summary or the full advanced forecast?",
-            "I'm checking my sources now. Would you prefer the summarized or detailed forecast?"
-        ]))
+            "I'm checking my sources now. Would you prefer the summarized or detailed forecast?"]), client)
 
         queue = {
             'type': 'specific',
             'keywords': ['summary', "basic", "simple", "dimple", 'summarize', "summarized", "detailed", "advanced", 'advance', 'detail', 'details']}
 
         def otherProcess(res):
-            print("returned query result    " + res)
             if res in ['summary', "basic", "simple", "dimple", 'summarize', "summarized"]:
-                print("determined summary")
                 universal.waitingForQuery = False
                 keywordprocessor.Process("what is the 7-day forecast", "simple")
             elif res in ["detailed", "advanced", 'advance', 'detail', 'details']:
-                print("determined basic")
                 universal.waitingForQuery = False
                 keywordprocessor.Process("what is the 7-day forecast", "basic")
 
@@ -339,12 +333,9 @@ def sevenDayCheck(keywords, info, passedValue=False):
         time.sleep(0.1)
         if queue in universal.currentQueries:
             universal.currentQueries.remove(queue)
-        else:
-            print(f"didn't find it in the queries. but i did find {universal.currentQueries}")
     else:
         try:
             if passedValue == "simple":
-                print("detected a simple search")
                 week = [
                     [1, weeklyDataJSON['daily'][1]["pressure"], weeklyDataJSON['daily'][1]["weather"][0]["main"],
                      weeklyDataJSON['daily'][1]['temp']["min"], weeklyDataJSON['daily'][1]['temp']["max"],
@@ -371,8 +362,7 @@ def sevenDayCheck(keywords, info, passedValue=False):
                 if trendPhrase:
                     pressureContext = universal.contextulizer("askedpressurechanges", method="check")
                     weatherContext = universal.contextulizer("askedweathertrend", method="check")
-                    print(pressureContext, weatherContext)
-                    universal.speak(trendPhrase, ssml='true')
+                    universal.speak(trendPhrase, True, client)
                     if pressureContext and weatherContext:
                         phrase = []
                         if pressureContext[1] == "high" and (weatherContext[1] == "good" or weatherContext[1] == "fair"):
@@ -393,19 +383,17 @@ def sevenDayCheck(keywords, info, passedValue=False):
                                       "With an average barometric pressure like the one I mentioned earlier, I'm not surprised at the predicted pacified forecast."]
 
                         if len(phrase) > 0:
-                            universal.speak(commandprocessor.selectandspeak(phrase))
+                            universal.speak(commandprocessor.selectandspeak(phrase), client)
                     return True
                 else:
                     return False
             if passedValue == "basic":
-                print("detected advanced in command processor")
                 week = [[1, weeklyDataJSON['daily'][1]], [2, weeklyDataJSON['daily'][2]], [3, weeklyDataJSON['daily'][3]], [4, weeklyDataJSON['daily'][4]], [5, weeklyDataJSON['daily'][5]], [6, weeklyDataJSON['daily'][6]], [7, weeklyDataJSON['daily'][7]]]
                 trendPhrase = weathertrendprocessor.trendFind(weeklyData=week, parseType="basic")
                 if trendPhrase:
                     pressureContext = universal.contextulizer("askedpressurechanges", method="check")
                     weatherContext = universal.contextulizer("askedweathertrend", method="check")
-                    print(pressureContext, weatherContext)
-                    universal.speak(trendPhrase, ssml=True)
+                    universal.speak(trendPhrase, True, client)
                     if pressureContext and weatherContext:
                         phrase = []
                         if pressureContext[1] == "high" and (weatherContext[1] == "good" or weatherContext[1] == "fair"):
@@ -426,10 +414,10 @@ def sevenDayCheck(keywords, info, passedValue=False):
                                       "With an average barometric pressure like the one I mentioned earlier, I'm not surprised at the predicted pacified forecast."]
 
                         if len(phrase) > 0:
-                            universal.speak(commandprocessor.selectandspeak(phrase))
+                            universal.speak(commandprocessor.selectandspeak(phrase), client)
             return True
         except Exception as err:
-            print(repr(err))
+            print("[ERRO] " + repr(err))
             traceback.print_tb(err.__traceback__)
             return True
     return False
@@ -439,7 +427,7 @@ qb['sevendaycheck']['function'] = sevenDayCheck
 qb['valueUpdate'] = {}
 qb['valueUpdate']['keys'] = ["VALUEUPDATE", "valueupdate"]
 qb['valueUpdate']['require'] = ["VALUEUPDATE", "valueupdate"]
-def valueUpdate(keywords, info, passedValue=False):
+def valueUpdate(keywords, info, passedValue=False, client=False):
 
     global dailyWeatherJSONBasic
     global dailyWeatherJSONAdvc
@@ -472,17 +460,18 @@ def valueUpdate(keywords, info, passedValue=False):
         universal.hourWeather = weatherResult
     else:
         hourTime = universal.hourWeather['dt']
-        print(hourTime, universal.hourWeather)
         if (hourTime + 3600) <= weatherResult['dt']:
             universal.hourWeather = weatherResult
 
     universal.currentWeather = weatherResult
-
-    return True
+    if passedValue:
+        return weatherResult
+    else:
+        return True
 qb['valueUpdate']['function'] = valueUpdate
 
 
-def process(keywords, passedValue=False):
+def process(keywords, passedValue=False, client=False):
     """Process weather commands, needs keywords(list) and can take a passedValue(any)"""
 
     valueUpdate(keywords, None, None)
@@ -517,11 +506,17 @@ def process(keywords, passedValue=False):
                             points += 1
                             if points > (len(keywords) * .74) or points > (len(phrase) * .74):
                                 questionChoices.insert(0, [question, points])
+                            else:
+                                print(f"[PROC]  len [X] {question}")
+                        else:
+                            print(f"[PROC]  TP [X] {question}")
                     else:
                         points += 1
+
                         if points > (len(keywords) * .74) or points > (len(phrase) * .74):
                             questionChoices.insert(0, [question, points])
-
+                        else:
+                            print(f"[PROC]  len [X] {question}")
     if len(questionChoices) > 0:
         largestNumber = 0
         for choice in questionChoices:
@@ -530,7 +525,7 @@ def process(keywords, passedValue=False):
         debounce = False
         for choice in questionChoices:
             if choice[1] == largestNumber and not debounce:
-                success = qb[choice[0]]['function'](keywords, info, passedValue)
+                success = qb[choice[0]]['function'](keywords, info, passedValue, client)
                 debounce = True
 
         if success:

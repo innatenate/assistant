@@ -1,25 +1,3 @@
-######################################################################
-#                 #####       #####            ##                    #
-#                  ###         ###             ##                    #
-#                  ###         ###             ##                    #
-#                  ###         ###     ##      ##                    #
-#                  ###############     ##      ##                    #
-#                  ###############             ##                 `  #
-#                  ###         ###    ###      ##                    #
-#                  ###         ###      #      ##                    #
-#                  ###         ###      #                            #
-#                  ###         ###      #      ##                    #
-#                 #####       #####   #####    ##                    #
-#                                                                    #
-#                made and scripted by nate tanner :)                 #
-#         all resources were gathered from youtube and api           #
-#         references online. i attempted to stray from using         #
-#         pre-made software so and instead stuck with code so        #
-#                           there's a lot!                           #
-#                                                                    #
-#                           started:8/2021                           #
-######################################################################
-
 
 #imports
 import speech_recognition as sr
@@ -52,6 +30,7 @@ previousStrings = []
 rating = 0
 sensitivity = 10                                         ## ADJUST SENSITIVITY
 average = 0
+started = None
 
 def detect_sound(indata, odate, frames, time, status):
     global average
@@ -74,37 +53,33 @@ def detect_sound(indata, odate, frames, time, status):
         hot = True
 
 
-universal.speak("Online")
-
-
 while 1:
     while not hot:
         with sd.Stream(callback=detect_sound):
             sd.sleep(1500)
     while hot:
-        print(str(hot))
         if processed and hot:
             hot = False
         else:
-            print("Beginning listening command. ")
             try:
+                print("[PROC] Attempting to listen")
                 with sr.Microphone() as source:
                     recognizer.adjust_for_ambient_noise(source, duration=1)
-                    print("Listening...")
                     audio = recognizer.listen(source, timeout = 2)
                     text = recognizer.recognize_google(audio, language="en-US")
-                    print("Processed text to " + str(text))
                     if len(text) > 0:
                         status = keywordprocessor.Process(text)
-                    hot = False
-                    processed = True
+                        if not status:
+                            print(f"error: {text}")
+                        hot = False
+                        processed = True
+                    else:
+                        print(f"error: {text}")
 
             except Exception as ex:
                 hot = False
                 processed = False
-                if ex.__class__.__name__ == "TimeoutError" or ex.__class__.__name__ == "WaitTimeoutError":
-                    print("stupid block")
-                else:
+                if not ex.__class__.__name__ == "TimeoutError" and not ex.__class__.__name__ == "WaitTimeoutError":
                     info = ["1", repr(ex), traceback.print_tb(ex.__traceback__)]
                     errorhandler.report(info)
 

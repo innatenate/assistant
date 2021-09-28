@@ -786,6 +786,7 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
             weeklyTakeaway[day['day']] = "  ".join(daytakeaway)
 
         beginForecastPhrase = ""
+        context = "fair"
 
         if "highrain" in important:
             context = "poor"
@@ -866,7 +867,6 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
 
         parsePhrase = "<amazon:domain name='news'> " + beginForecastPhrase + "</amazon:domain>  <break strength = 'x-strong'/>" + finalTakeaway +  f'<amazon:domain name="news"> Looks like this forecast is predicting a week of {context} weather conditions. </amazon:domain>'
 
-        print("FINALIZED AND SUCCESSFULLY DONE!")
         if context:
             universal.contextulizer(["askedweathertrend", context])
             return parsePhrase
@@ -877,8 +877,6 @@ def parse(parseType, data, secondary, weeklyData=False, newWeeklyData=False):
 def trendFind(todaysData=False, todaysSecondData=False, weeklyData=False, parseType="simple"):
     try:
         if weeklyData:
-            if parseType == "basic":
-                print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n found a basic search, clearing screen.")
             newWeeklyData, secondary = dataConvert(weeklyData, parseType)
             results = initTrendFind(newWeeklyData)
             if parseType == "basic":
@@ -891,12 +889,11 @@ def trendFind(todaysData=False, todaysSecondData=False, weeklyData=False, parseT
 
         fakeParse = parseResult.split("  ")
         fakeParse = "   \n  ".join(fakeParse)
-        print(fakeParse)
 
         return parseResult
 
     except Exception as err:
-        print(repr(err))
+        print("[ERRO] " + repr(err))
         print(repr(err.__context__))
         print(repr(err.__cause__))
         print(traceback.print_tb(err.__traceback__))

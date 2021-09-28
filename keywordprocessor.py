@@ -7,7 +7,7 @@ weather = ["today", "tomorrow", "seven", "day", "rain", "high", "low", "cold", "
            "today's", "todays", "outside", "barometric", "atmospheric", "atmosphere", "pressure"]
 
 
-def Process(text, secondary=False):
+def Process(text, secondary=False, client=False):
     originaltext = text
     text = str.lower(text)
     text = text.split(" ")
@@ -17,15 +17,14 @@ def Process(text, secondary=False):
     keywords = []
 
     if universal.waitingForQuery:
-        print("found a query")
         if len(universal.currentQueries) > 0:
             for query in universal.currentQueries:
                 if query['type'] == 'specific':
                     if commandprocessor.QueryQuestion(text, query['keywords']):
                         commandprocessor.ProcessQuery("".join(text), query)
                     else:
-                        universal.speak("I don't think I heard you right. Let's try that again.")
-                        universal.speak(universal.lastPhrase)
+                        universal.speak("I don't think I heard you right. Let's try that again.", client)
+                        universal.speak(universal.lastPhrase, client)
                         return False
                 elif query['type'] == 'yesno':
                     if 'sure' in text or  'yes' in text or  'good' in text or 'great' in text or "please" in text or "thanks" in text:
@@ -38,15 +37,12 @@ def Process(text, secondary=False):
         if word in plants:
             plantscore += 1
             keywords.insert(len(keywords), word)
-            print("plant score one for " + word)
         elif word in question:
             questionscore += 1
             keywords.insert(len(keywords), word)
-            print("question score one for " + word)
         elif word in weather:
             weatherscore += 1
             keywords.insert(len(keywords), word)
-            print("weather score one for " + word)
 
     for word in keywords:
         if word in text:
@@ -62,21 +58,14 @@ def Process(text, secondary=False):
     for word in text:
         if numCheck(word) or word == "+" or word == "-" or word == "*" or word == "/":
             keywords.insert(len(keywords), word)
-            print("math identified " + word)
         elif len(word) > 2:  # cutoff limit for sub-keywords  2
             keywords.insert(len(keywords), word)
-            print("subkeyword " + word)
 
     if len(keywords) < 2:
         return Exception("Keyword Error", "Not enough information to work off of")
     else:
-        print("Gathered keywords are: " + str(keywords))
-        if secondary:
-            status = commandprocessor.process(keywords, [plantscore, questionscore, weatherscore], originaltext, secondary)
-        else:
-            status = commandprocessor.process(keywords, [plantscore, questionscore, weatherscore], originaltext)
+        status = commandprocessor.process(keywords, [plantscore, questionscore, weatherscore], originaltext, secondary, client)
         if not status:
-            universal.speak("Something didn't work properly with that last command. Please try again.")
             raise ReferenceError(f"Could not process command given. Command: {originaltext}")
 
     return True
